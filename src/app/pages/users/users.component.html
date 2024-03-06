@@ -1,0 +1,159 @@
+<div class="container-fluid p-5">
+    <div class="row w-100 m-0">
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white border-0">
+            <div class="row">
+              <div class="col-6">
+                <span style="font-size: 1.2em;" class="font-weight-bold">Users</span>
+              </div>
+              <div class="col-6">
+                <button class="btn btn-success float-right" (click)="openUserModal(userModal)">Add User</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-flush m-0">
+              <thead>
+                <tr>
+                  <th scope="col" style="font-weight: 450;">Sr. No</th>
+                  <th scope="col" style="font-weight: 450;">Name</th>
+                  <!-- <th>Username</th> -->
+                  <th scope="col" style="font-weight: 450;">Email</th>
+                  <th scope="col" style="font-weight: 450;">Status</th>
+                  <th scope="col" style="font-weight: 450;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of users; index as idx">
+                  <td class="text-sm">{{ idx + 1 }}</td>
+                  <td class="text-sm">{{ user["fullName"] }}</td>
+                  <td class="text-sm">{{ user["email"] }}</td>
+                  <td class="text-sm">
+                    <h5>
+                      <span class="badge badge-pill {{ user['status'] ? 'badge-success' : 'badge-danger' }}">{{ user["status"] ? 'Active' : 'Inactive' }}</span>
+                    </h5>
+                  </td>
+                  <td class="text-sm">
+                    <button type="button" class="btn btn-sm btn-outline-success mx-1" (click)="openUserModal(userModal, user)">Edit</button>
+                    <button type="button" class="btn btn-sm btn-outline-success mx-1" (click)="openDeleteModal(deleteModal, user)">Delete</button>
+                    <!-- <button type="button" class="btn btn-sm btn-outline-success mx-1">View Cars</button> -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #userModal let-modal>
+    <div class="modal-header">
+      <span class="modal-title font-weight-bold">User Details</span>
+      <button type="button" class="btn" aria-label="Close" id="closeAddNewStaffModal" #closeAddNewStaffModal
+        (click)="modal.dismiss('Cross click')">
+        <!-- <i class="bi bi-x"></i> -->
+        &times;
+      </button>
+    </div>
+    <form [formGroup]="userForm" (ngSubmit)="saveUser()" ngNativeValidate>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="mb-2">
+              <label for="fullName" class="form-label text-muted m-0 mb-1">Name</label>
+              <input type="text" class="form-control" id="fullName" name="fullName" formControlName="fullName" placeholder="Full Name" required>
+            </div>
+          </div>
+          <div class="col-12">
+            <!-- <div class="mb-2">
+              <label for="contact" class="form-label text-muted m-0 mb-1">Phone Number</label>
+              <input type="text" class="form-control" id="contact" name="contact" formControlName="contact" placeholder="9999999999" required>
+            </div> -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="mb-2">
+              <label for="email" class="form-label text-muted m-0 mb-1">Email</label>
+              <input type="email" class="form-control" id="email" name="email" formControlName="email" placeholder="abc@example.com" required [readOnly]="updation">
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="mb-2">
+              <label for="password" class="form-label text-muted m-0 mb-1">Password</label>
+              <input [type]="updation ? 'password' : 'text'" class="form-control" id="password" name="password" formControlName="password" placeholder="Password" [readOnly]="updation">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group d-flex flex-column">
+              <label for="access" class="m-0 text-muted mb-1">Access</label>
+              <div class="btn-group btn-group-toggle" ngbRadioGroup id="access" name="access"
+                formControlName="access">
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]='0'> No Access
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm ">
+                  <input ngbButton type="radio" [value]='1'> Only Upload
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm ">
+                  <input ngbButton type="radio" [value]='2'> Upload and Download
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm ">
+                  <input ngbButton type="radio" [value]='3'> Create New Folder
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm ">
+                  <input ngbButton type="radio" [value]='4'> Share with Other
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group d-flex flex-column align-items-start">
+              <label for="status" class="m-0 text-muted mb-1">Status</label>
+              <div class="btn-group btn-group-toggle" ngbRadioGroup id="status" name="status"
+                formControlName="status">
+                <label ngbButtonLabel class="btn-primary btn-sm ">
+                  <input ngbButton type="radio" [value]='1'> Active
+                </label>
+                <label ngbButtonLabel class="btn-primary btn-sm">
+                  <input ngbButton type="radio" [value]='0'> InActive
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success btn-sm" [disabled]="loader">
+          Save
+          <span *ngIf="loader">&nbsp;</span>
+          <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss('')">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header">
+      <span class="modal-title font-weight-bold">Are you sure to delete this item?</span>
+      <button type="button" class="btn" aria-label="Close" id="closeAddNewStaffModal" #closeAddNewStaffModal
+        (click)="modal.dismiss('Cross click')">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-outline-success" (click)="deleteItem(selectedUserModel.userId)">Yes</button>
+        <button class="btn btn-sm btn-success">Cancel</button>
+    </div>
+</ng-template>
